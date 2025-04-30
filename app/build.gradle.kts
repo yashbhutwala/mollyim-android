@@ -7,6 +7,7 @@ plugins {
   id("com.squareup.wire")
   id("molly")
   id("kotlin-kapt")
+  id("com.google.dagger.hilt.android") version "2.48"
 }
 
 val canonicalVersionCode = 1535
@@ -223,7 +224,8 @@ android {
       abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
     }
 
-    resourceConfigurations += listOf()
+    // Update resource configurations to include all supported languages
+    resourceConfigurations += listOf("en", "ar", "de", "es", "fr", "hi", "it", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "zh")
 
     testInstrumentationRunner = "org.thoughtcrime.securesms.testing.SignalTestRunner"
     testInstrumentationRunnerArguments["clearPackageData"] = "true"
@@ -580,9 +582,9 @@ dependencies {
   androidTestUtil(testLibs.androidx.test.orchestrator)
 
   // Room
-  implementation(libs.androidx.room.runtime)
-  implementation(libs.androidx.room.ktx)
-  kapt(libs.androidx.room.compiler)
+  implementation("androidx.room:room-runtime:2.7.0")
+  implementation("androidx.room:room-ktx:2.7.0")
+  kapt("androidx.room:room-compiler:2.7.0")
 
   // OkHttp
   implementation(libs.square.okhttp3)
@@ -597,6 +599,14 @@ dependencies {
   // ViewModel
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
+
+  // Hilt
+  implementation("com.google.dagger:hilt-android:2.48")
+  kapt("com.google.dagger:hilt-android-compiler:2.48")
+
+  // Hilt for ViewModel
+  implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+  kapt("androidx.hilt:hilt-compiler:1.0.0")
 }
 
 fun assertIsGitRepo() {

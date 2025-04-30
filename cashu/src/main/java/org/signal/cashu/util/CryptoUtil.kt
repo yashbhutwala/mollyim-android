@@ -12,6 +12,7 @@ import org.signal.cashu.model.BlindedMessage
 import org.signal.cashu.model.Proof
 import java.math.BigInteger
 import java.security.SecureRandom
+import java.nio.ByteBuffer
 
 object CryptoUtil {
     private val curve = ECNamedCurveTable.getParameterSpec("secp256k1")
@@ -52,7 +53,8 @@ object CryptoUtil {
 
             // Verify signature
             val signer = ECDSASigner()
-            signer.init(false, ECPublicKeyParameters(curve.g, curve))
+            val domainParams = org.bouncycastle.crypto.params.ECDomainParameters(curve.curve, curve.g, curve.n, curve.h)
+            signer.init(false, ECPublicKeyParameters(curve.g, domainParams))
 
             val r = BigInteger(1, signature.copyOfRange(0, 32))
             val s = BigInteger(1, signature.copyOfRange(32, 64))
@@ -80,5 +82,9 @@ object CryptoUtil {
 
     private fun String.hexToBytes(): ByteArray {
         return chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+    }
+
+    private fun Long.toByteArray(): ByteArray {
+        return ByteBuffer.allocate(8).putLong(this).array()
     }
 }

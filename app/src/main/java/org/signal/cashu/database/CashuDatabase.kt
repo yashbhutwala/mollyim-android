@@ -3,6 +3,14 @@ package org.signal.cashu.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.TypeConverter
+import kotlinx.coroutines.flow.Flow
 import org.signal.cashu.service.Transaction
 import org.signal.cashu.service.TransactionStatus
 import org.signal.cashu.service.TransactionType

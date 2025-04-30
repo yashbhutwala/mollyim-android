@@ -9,3 +9,6 @@
     <fragment
         android:id="@+id/cashuWalletFragment"
         android:name="org.signal.cashu.ui.CashuWalletFragment"
+        android:label="CashuWalletFragment" />
+
+</navigation>

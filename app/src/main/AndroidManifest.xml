@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          android:targetSandboxVersion="2"
-          package="org.signal.cashu">
+          android:targetSandboxVersion="2">
 
     <uses-sdk tools:overrideLibrary="androidx.camera.core,androidx.camera.camera2,androidx.camera.lifecycle,androidx.camera.view" />
 
@@ -95,7 +94,7 @@
     <!-- For vestigial telecom integration service -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
 
-    <application android:name=".ApplicationContext"
+    <application android:name=".CashuApplication"
                  android:icon="@mipmap/ic_launcher"
                  android:label="@string/app_name"
                  android:memtagMode="async"
