@@ -1,7 +1,6 @@
 package org.signal.cashu.di
 
 import android.content.Context
-import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,11 +21,7 @@ object CashuModule {
     fun provideCashuDatabase(
         @ApplicationContext context: Context
     ): CashuDatabase {
-        return Room.databaseBuilder(
-            context,
-            CashuDatabase::class.java,
-            "cashu_database"
-        ).build()
+        return CashuDatabase(context)
     }
 
     @Provides

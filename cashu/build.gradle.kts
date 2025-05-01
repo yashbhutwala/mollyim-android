@@ -44,9 +44,4 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.bouncycastle.bcprov.jdk15on)
     implementation(libs.bouncycastle.bcpkix.jdk15on)
-
-    // Room dependencies
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
 }

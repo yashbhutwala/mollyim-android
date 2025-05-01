@@ -233,16 +233,6 @@ android {
     testInstrumentationRunner = "org.thoughtcrime.securesms.testing.SignalTestRunner"
     testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
-    // Add Room schema location
-    javaCompileOptions {
-      annotationProcessorOptions {
-        arguments += mapOf(
-          "room.schemaLocation" to "$projectDir/schemas",
-          "room.incremental" to "true",
-          "room.expandProjection" to "true"
-        )
-      }
-    }
   }
 
   buildTypes {
@@ -440,6 +430,11 @@ dependencies {
   implementation(project(":photoview"))
   implementation(project(":core-ui"))
 
+  // Room replaced with Realm
+  implementation("io.realm:realm-android-library:10.18.0")
+  implementation("io.realm:realm-annotations:10.18.0")
+  implementation("io.realm:realm-android-kotlin-extensions:10.18.0")
+
   implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.fragment.compose)
   implementation(libs.androidx.appcompat) {
@@ -594,11 +589,6 @@ dependencies {
   androidTestImplementation(testLibs.diff.utils)
 
   androidTestUtil(testLibs.androidx.test.orchestrator)
-
-  // Room
-  implementation(libs.androidx.room.runtime)
-  implementation(libs.androidx.room.ktx)
-  kapt(libs.androidx.room.compiler)
 
   // OkHttp
   implementation(libs.square.okhttp3)

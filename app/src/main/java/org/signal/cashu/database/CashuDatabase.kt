@@ -1,33 +1,102 @@
 package org.signal.cashu.database
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.TypeConverter
+import android.content.Context
+import io.realm.Realm
+import io.realm.RealmConfiguration
+import io.realm.RealmObject
+import io.realm.RealmResults
+import io.realm.annotations.PrimaryKey
+import io.realm.annotations.Required
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import org.signal.cashu.service.TransactionStatus
 import org.signal.cashu.service.TransactionType
+import javax.inject.Inject
 
-@Database(
-    entities = [TransactionEntity::class, MintUrl::class],
-    version = 1,
-    exportSchema = false
-)
-@TypeConverters(Converters::class)
-abstract class CashuDatabase : RoomDatabase() {
-    abstract fun transactionDao(): TransactionDao
-    abstract fun mintUrlDao(): MintUrlDao
+class CashuDatabase @Inject constructor(private val context: Context) {
+    private val realm: Realm
+
+    init {
+        Realm.init(context)
+        // Use a simplified configuration without migration options to avoid Kotlin metadata issues
+        val config = RealmConfiguration.Builder()
+            .name("cashu_database.realm")
+            .schemaVersion(1)
+            .deleteRealmIfMigrationNeeded() // For development, use proper migration in production
+            .build()
+        realm = Realm.getInstance(config)
+    }
+
+    fun transactionDao(): TransactionDao = TransactionDaoImpl(realm)
+    fun mintUrlDao(): MintUrlDao = MintUrlDaoImpl(realm)
+
+    fun close() {
+        realm.close()
+    }
 }
 
-@Entity(tableName = "transactions")
+open class TransactionEntityRealm : RealmObject() {
+    @PrimaryKey
+    var id: String = ""
+    var amount: Long = 0
+    var timestamp: Long = 0
+    @Required
+    var type: String = ""
+    @Required
+    var status: String = ""
+    var memo: String? = null
+}
+
+// Mapping functions between Realm objects and domain models
+fun TransactionEntityRealm.toEntity(): TransactionEntity {
+    return TransactionEntity(
+        id = id,
+        amount = amount,
+        timestamp = timestamp,
+        type = TransactionType.valueOf(type),
+        status = TransactionStatus.valueOf(status),
+        memo = memo
+    )
+}
+
+fun TransactionEntity.toRealmObject(): TransactionEntityRealm {
+    val entity = TransactionEntityRealm()
+    entity.id = this.id
+    entity.amount = this.amount
+    entity.timestamp = this.timestamp
+    entity.type = this.type.name
+    entity.status = this.status.name
+    entity.memo = this.memo
+    return entity
+}
+
+open class MintUrlRealm : RealmObject() {
+    @PrimaryKey
+    var url: String = ""
+    var name: String = ""
+    var isDefault: Boolean = false
+}
+
+fun MintUrlRealm.toEntity(): MintUrl {
+    return MintUrl(
+        url = url,
+        name = name,
+        isDefault = isDefault
+    )
+}
+
+fun MintUrl.toRealmObject(): MintUrlRealm {
+    val entity = MintUrlRealm()
+    entity.url = this.url
+    entity.name = this.name
+    entity.isDefault = this.isDefault
+    return entity
+}
+
 data class TransactionEntity(
-    @PrimaryKey(autoGenerate = false)
     val id: String,
     val amount: Long,
     val timestamp: Long,
@@ -62,64 +131,119 @@ data class TransactionEntity(
     }
 }
 
-@Entity(tableName = "mint_urls")
 data class MintUrl(
-    @PrimaryKey val url: String,
+    val url: String,
     val name: String,
     val isDefault: Boolean = false
 )
 
-@Dao
 interface TransactionDao {
-    @Query("SELECT * FROM transactions ORDER BY timestamp DESC")
     fun getAllTransactions(): Flow<List<TransactionEntity>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(transaction: TransactionEntity)
-
-    @Query("SELECT * FROM transactions WHERE id = :id")
     suspend fun getTransactionById(id: String): TransactionEntity?
-
-    @Query("SELECT SUM(amount) FROM transactions WHERE type = :type AND status = :status")
     suspend fun getTotalAmount(type: TransactionType, status: TransactionStatus): Long?
 }
 
-@Dao
+class TransactionDaoImpl(private val realm: Realm) : TransactionDao {
+    override fun getAllTransactions(): Flow<List<TransactionEntity>> = flow {
+        val transactions = realm.where(TransactionEntityRealm::class.java)
+            .findAll()
+            .sort("timestamp")
+
+        // Convert RealmResults to List<TransactionEntity>
+        emit(transactions.map { it.toEntity() })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun insertTransaction(transaction: TransactionEntity) {
+        withContext(Dispatchers.IO) {
+            realm.executeTransaction { r ->
+                r.copyToRealmOrUpdate(transaction.toRealmObject())
+            }
+        }
+    }
+
+    override suspend fun getTransactionById(id: String): TransactionEntity? {
+        return withContext(Dispatchers.IO) {
+            realm.where(TransactionEntityRealm::class.java)
+                .equalTo("id", id)
+                .findFirst()
+                ?.toEntity()
+        }
+    }
+
+    override suspend fun getTotalAmount(type: TransactionType, status: TransactionStatus): Long? {
+        return withContext(Dispatchers.IO) {
+            val transactions = realm.where(TransactionEntityRealm::class.java)
+                .equalTo("type", type.name)
+                .equalTo("status", status.name)
+                .findAll()
+
+            // Calculate total manually since Realm sum() operation might not be safe with Kotlin extensions
+            transactions.sumOf { it.amount }
+        }
+    }
+}
+
 interface MintUrlDao {
-    @Query("SELECT * FROM mint_urls ORDER BY isDefault DESC")
     fun getAllMintUrls(): Flow<List<MintUrl>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMintUrl(mintUrl: MintUrl)
-
-    @Query("SELECT * FROM mint_urls WHERE isDefault = 1 LIMIT 1")
     suspend fun getDefaultMintUrl(): MintUrl?
-
-    @Query("UPDATE mint_urls SET isDefault = 0")
     suspend fun clearDefaultMintUrl()
-
-    @Query("UPDATE mint_urls SET isDefault = 1 WHERE url = :url")
     suspend fun setDefaultMintUrl(url: String)
 }
 
-class Converters {
-    @TypeConverter
-    fun fromTransactionType(value: TransactionType): String {
-        return value.name
+class MintUrlDaoImpl(private val realm: Realm) : MintUrlDao {
+    override fun getAllMintUrls(): Flow<List<MintUrl>> = flow {
+        val mintUrls = realm.where(MintUrlRealm::class.java)
+            .findAll()
+            .sort("isDefault")
+
+        emit(mintUrls.map { it.toEntity() })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun insertMintUrl(mintUrl: MintUrl) {
+        withContext(Dispatchers.IO) {
+            realm.executeTransaction { r ->
+                r.copyToRealmOrUpdate(mintUrl.toRealmObject())
+            }
+        }
     }
 
-    @TypeConverter
-    fun toTransactionType(value: String): TransactionType {
-        return TransactionType.valueOf(value)
+    override suspend fun getDefaultMintUrl(): MintUrl? {
+        return withContext(Dispatchers.IO) {
+            realm.where(MintUrlRealm::class.java)
+                .equalTo("isDefault", true)
+                .findFirst()
+                ?.toEntity()
+        }
     }
 
-    @TypeConverter
-    fun fromTransactionStatus(value: TransactionStatus): String {
-        return value.name
+    override suspend fun clearDefaultMintUrl() {
+        withContext(Dispatchers.IO) {
+            realm.executeTransaction { r ->
+                r.where(MintUrlRealm::class.java)
+                    .equalTo("isDefault", true)
+                    .findAll()
+                    .forEach { it.isDefault = false }
+            }
+        }
     }
 
-    @TypeConverter
-    fun toTransactionStatus(value: String): TransactionStatus {
-        return TransactionStatus.valueOf(value)
+    override suspend fun setDefaultMintUrl(url: String) {
+        withContext(Dispatchers.IO) {
+            realm.executeTransaction { r ->
+                // First clear all existing defaults
+                r.where(MintUrlRealm::class.java)
+                    .equalTo("isDefault", true)
+                    .findAll()
+                    .forEach { it.isDefault = false }
+
+                // Then set the new default
+                r.where(MintUrlRealm::class.java)
+                    .equalTo("url", url)
+                    .findFirst()
+                    ?.let { it.isDefault = true }
+            }
+        }
     }
 }

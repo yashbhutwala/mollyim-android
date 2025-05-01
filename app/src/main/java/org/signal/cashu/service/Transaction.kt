@@ -1,18 +1,17 @@
 package org.signal.cashu.service
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 
-@Entity(tableName = "transactions")
-data class Transaction(
+open class Transaction : RealmObject() {
     @PrimaryKey
-    val id: String,
-    val amount: Long,
-    val timestamp: Long,
-    val type: TransactionType,
-    val status: TransactionStatus,
-    val memo: String? = null
-)
+    var id: String = ""
+    var amount: Long = 0
+    var timestamp: Long = 0
+    var type: TransactionType = TransactionType.RECEIVE
+    var status: TransactionStatus = TransactionStatus.PENDING
+    var memo: String? = null
+}
 
 enum class TransactionType {
     SEND,
