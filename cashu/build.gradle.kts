@@ -31,11 +31,12 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
-    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")        // bump to latest 1.9.x
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")               // bump to latest 4.x
+    implementation("com.google.code.gson:gson:2.13.1")                 // bump to latest stable
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
+}
 
     // Room dependencies
     val roomVersion = "2.6.1"
