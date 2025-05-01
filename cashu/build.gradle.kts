@@ -4,12 +4,16 @@ plugins {
     id("kotlin-kapt")
 }
 
+val signalJavaVersion: JavaVersion by rootProject.extra
+val signalKotlinJvmTarget: String by rootProject.extra
+val signalMinSdkVersion: Int by rootProject.extra
+
 android {
     namespace = "org.signal.cashu"
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 21
+        minSdk = signalMinSdkVersion
 //        targetSdk = 34 // Deprecated for libraries
     }
 
@@ -25,25 +29,24 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = signalJavaVersion
+        targetCompatibility = signalJavaVersion
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = signalKotlinJvmTarget
     }
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib.jdk8)                           // use version from libs.versions.toml
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")               // bump to latest 4.x
-    implementation("com.google.code.gson:gson:2.13.1")                 // bump to latest stable
-    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
-    implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
+    implementation(libs.kotlin.stdlib.jdk8)
+    implementation(libs.square.okhttp3)
+    implementation(libs.gson)
+    implementation(libs.bouncycastle.bcprov.jdk15on)
+    implementation(libs.bouncycastle.bcpkix.jdk15on)
 
     // Room dependencies
-    val roomVersion = "2.6.1"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 }
