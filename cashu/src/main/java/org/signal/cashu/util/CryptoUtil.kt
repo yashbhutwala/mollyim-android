@@ -26,7 +26,7 @@ object CryptoUtil {
         val commitment = createCommitment(secret, amount)
 
         // Blind commitment
-        val blindedCommitment = commitment.multiply(curve.g.multiply(blindingFactor))
+        val blindedCommitment = commitment.multiply(blindingFactor)
 
         return BlindedMessage(
             amount = amount,

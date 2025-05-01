@@ -226,7 +226,8 @@ android {
     }
 
     // Update resource configurations to include all supported languages
-    androidResources.localeFilters.addAll(listOf("en", "ar", "de", "es", "fr", "hi", "it", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "zh"))
+    resourceConfigurations.addAll(listOf("en", "ar", "de", "es", "fr", "hi", "it", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "zh"))
+    // androidResources.localeFilters.addAll(listOf("en", "ar", "de", "es", "fr", "hi", "it", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "zh"))
     // resourceConfigurations += listOf("en", "ar", "de", "es", "fr", "hi", "it", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "zh") // Deprecated
 
     testInstrumentationRunner = "org.thoughtcrime.securesms.testing.SignalTestRunner"

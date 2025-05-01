@@ -2,6 +2,9 @@ package org.signal.cashu.service
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.MediaType.Companion.toMediaType
+import org.signal.cashu.model.BlindedMessage
 import org.signal.cashu.model.Token
 import org.signal.cashu.util.CryptoUtil
 import java.math.BigInteger
@@ -9,6 +12,7 @@ import java.security.SecureRandom
 
 class DefaultCashuService(private val httpClient: OkHttpClient) : CashuService {
     private val random = SecureRandom()
+    private val jsonMediaType = "application/json; charset=utf-8".toMediaType()
 
     override suspend fun createToken(amount: Long, mintUrl: String): Token {
         // Generate random secret
@@ -40,7 +44,7 @@ class DefaultCashuService(private val httpClient: OkHttpClient) : CashuService {
         val response = httpClient.newCall(
             Request.Builder()
                 .url("$mintUrl/redeem")
-                .post(token.toJson())
+                .post(token.toJson().toRequestBody(jsonMediaType))
                 .build()
         ).execute()
 
@@ -82,7 +86,7 @@ class DefaultCashuService(private val httpClient: OkHttpClient) : CashuService {
         val response = httpClient.newCall(
             Request.Builder()
                 .url("$mintUrl/sign")
-                .post(blindedMessage.toJson())
+                .post(blindedMessage.toJson().toRequestBody(jsonMediaType))
                 .build()
         ).execute()
 

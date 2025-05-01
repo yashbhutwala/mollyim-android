@@ -4,7 +4,7 @@ import com.google.gson.Gson
 
 data class BlindedMessage(
     val amount: Long,
-    val B_: String,
+    val blindedMessage: String,
     val id: String
 ) {
     fun toJson(): String {

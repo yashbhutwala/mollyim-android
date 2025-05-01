@@ -4,7 +4,7 @@ import com.google.gson.Gson
 
 data class Proof(
     val amount: Long,
-    val C: String,
+    val commitment: String,
     val secret: String,
     val id: String
 ) {

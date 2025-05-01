@@ -23,6 +23,7 @@ navigation-safe-args-gradle-plugin = "2.8.5"
 protobuf-gradle-plugin = "0.9.0"
 kotlinx-coroutines = "1.9.0"
 wire = "5.0.0"
+bouncycastle = "1.68"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
@@ -170,6 +171,9 @@ square-okhttp3 = "com.squareup.okhttp3:okhttp:4.12.0"
 square-okhttp3-dnsoverhttps = "com.squareup.okhttp3:okhttp-dnsoverhttps:4.12.0"
 square-okio = "com.squareup.okio:okio:3.9.0"
 square-leakcanary = "com.squareup.leakcanary:leakcanary-android:2.7"
+gson = "com.google.code.gson:gson:2.10.1"
+bouncycastle-bcprov-jdk15on = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bouncycastle" }
+bouncycastle-bcpkix-jdk15on = { module = "org.bouncycastle:bcpkix-jdk15on", version.ref = "bouncycastle" }
 wire-runtime-jvm = { module = "com.squareup.wire:wire-runtime-jvm", version.ref = "wire" }
 rxjava3-rxjava = "io.reactivex.rxjava3:rxjava:3.0.13"
 rxjava3-rxandroid = "io.reactivex.rxjava3:rxandroid:3.0.0"
