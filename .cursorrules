@@ -121,3 +121,10 @@ Generate code, corrections, and refactorings that comply with the basic principl
 
 - Use the standard widget testing for flutter
 - Use integration tests for each api module.
+
+
+
+### Recent notes
+- Run the run_app.sh script until all errors and warnings are fixed.  Run at max 5 times before prompting to run via Android Studio.
+- Look at the last 12 commits and also the uncommitted changed files so far and see if any of those changes need to be fixed or reverted to fix the build errors.
+
