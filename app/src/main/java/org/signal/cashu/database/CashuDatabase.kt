@@ -11,7 +11,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.TypeConverter
 import kotlinx.coroutines.flow.Flow
-import org.signal.cashu.service.Transaction
 import org.signal.cashu.service.TransactionStatus
 import org.signal.cashu.service.TransactionType
 
@@ -28,13 +27,40 @@ abstract class CashuDatabase : RoomDatabase() {
 
 @Entity(tableName = "transactions")
 data class TransactionEntity(
-    @PrimaryKey val id: String,
+    @PrimaryKey(autoGenerate = false)
+    val id: String,
     val amount: Long,
     val timestamp: Long,
     val type: TransactionType,
     val status: TransactionStatus,
     val memo: String? = null
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as TransactionEntity
+
+        if (id != other.id) return false
+        if (amount != other.amount) return false
+        if (timestamp != other.timestamp) return false
+        if (type != other.type) return false
+        if (status != other.status) return false
+        if (memo != other.memo) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + amount.hashCode()
+        result = 31 * result + timestamp.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + status.hashCode()
+        result = 31 * result + (memo?.hashCode() ?: 0)
+        return result
+    }
+}
 
 @Entity(tableName = "mint_urls")
 data class MintUrl(

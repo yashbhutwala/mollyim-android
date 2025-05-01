@@ -2,7 +2,7 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.jetbrains.kotlin.android)
   alias(libs.plugins.compose.compiler)
-  id("androidx.navigation.safeargs")
+  id("androidx.navigation.safeargs.kotlin")
   id("kotlin-parcelize")
   id("com.squareup.wire")
   id("molly")
@@ -152,6 +152,7 @@ android {
     buildConfig = true
     viewBinding = true
     compose = true
+    dataBinding = true
   }
 
   composeOptions {
@@ -229,6 +230,17 @@ android {
 
     testInstrumentationRunner = "org.thoughtcrime.securesms.testing.SignalTestRunner"
     testInstrumentationRunnerArguments["clearPackageData"] = "true"
+
+    // Add Room schema location
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments += mapOf(
+          "room.schemaLocation" to "$projectDir/schemas",
+          "room.incremental" to "true",
+          "room.expandProjection" to "true"
+        )
+      }
+    }
   }
 
   buildTypes {
@@ -582,9 +594,9 @@ dependencies {
   androidTestUtil(testLibs.androidx.test.orchestrator)
 
   // Room
-  implementation("androidx.room:room-runtime:2.7.0")
-  implementation("androidx.room:room-ktx:2.7.0")
-  kapt("androidx.room:room-compiler:2.7.0")
+  implementation(libs.androidx.room.runtime)
+  implementation(libs.androidx.room.ktx)
+  kapt(libs.androidx.room.compiler)
 
   // OkHttp
   implementation(libs.square.okhttp3)
@@ -607,6 +619,16 @@ dependencies {
   // Hilt for ViewModel
   implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
   kapt("androidx.hilt:hilt-compiler:1.0.0")
+
+  // Navigation
+  implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+  implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+  implementation("androidx.navigation:navigation-compose:2.7.7")
+
+  // Hilt
+  implementation("com.google.dagger:hilt-android:2.48")
+  kapt("com.google.dagger:hilt-android-compiler:2.48")
+  implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 }
 
 fun assertIsGitRepo() {

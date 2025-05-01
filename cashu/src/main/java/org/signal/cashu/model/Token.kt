@@ -15,23 +15,3 @@ data class Token(
         return Gson().toJson(this)
     }
 }
-
-data class BlindedMessage(
-    @SerializedName("amount")
-    val amount: Long,
-    @SerializedName("B_")
-    val blindedMessage: String,
-    @SerializedName("id")
-    val id: String
-)
-
-data class Proof(
-    @SerializedName("amount")
-    val amount: Long,
-    @SerializedName("secret")
-    val secret: String,
-    @SerializedName("C")
-    val commitment: String,
-    @SerializedName("id")
-    val id: String
-)
