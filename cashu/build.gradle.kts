@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")        // bump to latest 1.9.x
+    implementation(libs.kotlin.stdlib.jdk8)                           // use version from libs.versions.toml
     implementation("com.squareup.okhttp3:okhttp:4.11.0")               // bump to latest 4.x
     implementation("com.google.code.gson:gson:2.13.1")                 // bump to latest stable
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
