@@ -16,7 +16,7 @@ import org.signal.cashu.service.TransactionStatus
 import org.signal.cashu.service.TransactionType
 
 @Database(
-    entities = [Transaction::class, MintUrl::class],
+    entities = [TransactionEntity::class, MintUrl::class],
     version = 1,
     exportSchema = false
 )
@@ -55,7 +55,7 @@ interface TransactionDao {
     suspend fun getTransactionById(id: String): TransactionEntity?
 
     @Query("SELECT SUM(amount) FROM transactions WHERE type = :type AND status = :status")
-    suspend fun getTotalAmount(type: TransactionType, status: TransactionStatus): Long
+    suspend fun getTotalAmount(type: TransactionType, status: TransactionStatus): Long?
 }
 
 @Dao
