@@ -16,10 +16,13 @@ android {
     compileOptions {
         sourceCompatibility signalJavaVersion
         targetCompatibility signalJavaVersion
+        coreLibraryDesugaringEnabled true
     }
 }
 
 dependencies {
+    coreLibraryDesugaring libs.android.tools.desugar
+    androidTestImplementation libs.android.tools.desugar
     implementation project(':core-util')
     implementation libs.androidx.fragment
     lintChecks project(':lintchecks')

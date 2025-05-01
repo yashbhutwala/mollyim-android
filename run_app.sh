@@ -18,7 +18,7 @@ fi
 
 # Build and install the app
 echo "Building and installing the app..."
-./gradlew installDebug --stacktrace
+./gradlew :app:installProdFossWebsiteDebug --stacktrace
 
 # Check if build was successful
 if [ $? -ne 0 ]; then

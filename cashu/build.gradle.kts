@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 34
+//        targetSdk = 34 // Deprecated for libraries
     }
 
     buildTypes {
@@ -18,6 +18,10 @@ android {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
+    }
+
+    testOptions {
+        targetSdk = 34
     }
 
     compileOptions {
@@ -36,7 +40,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.1")                 // bump to latest stable
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
-}
 
     // Room dependencies
     val roomVersion = "2.6.1"
