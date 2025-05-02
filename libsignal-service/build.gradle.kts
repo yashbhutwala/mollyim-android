@@ -96,3 +96,12 @@ dependencies {
   testFixturesImplementation(libs.libsignal.client)
   testFixturesImplementation(testLibs.junit.junit)
 }
+
+// Include both Kotlin and Java source directories for Kotlin compilation
+kotlin {
+  sourceSets {
+    val main by getting {
+      kotlin.srcDirs("src/main/kotlin", "src/main/java")
+    }
+  }
+}

@@ -2,10 +2,12 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.jetbrains.kotlin.android)
   alias(libs.plugins.compose.compiler)
-  id("androidx.navigation.safeargs")
+  id("androidx.navigation.safeargs.kotlin")
   id("kotlin-parcelize")
   id("com.squareup.wire")
   id("molly")
+  id("kotlin-kapt")
+  id("com.google.dagger.hilt.android") version "2.53"
 }
 
 val canonicalVersionCode = 1535
@@ -150,6 +152,7 @@ android {
     buildConfig = true
     viewBinding = true
     compose = true
+    dataBinding = true
   }
 
   composeOptions {
@@ -222,10 +225,14 @@ android {
       abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
     }
 
-    resourceConfigurations += listOf()
+    // Update resource configurations to include all supported languages
+    resourceConfigurations.addAll(listOf("en", "ar", "de", "es", "fr", "hi", "it", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "zh"))
+    // androidResources.localeFilters.addAll(listOf("en", "ar", "de", "es", "fr", "hi", "it", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "zh"))
+    // resourceConfigurations += listOf("en", "ar", "de", "es", "fr", "hi", "it", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "zh") // Deprecated
 
     testInstrumentationRunner = "org.thoughtcrime.securesms.testing.SignalTestRunner"
     testInstrumentationRunnerArguments["clearPackageData"] = "true"
+
   }
 
   buildTypes {
@@ -423,6 +430,11 @@ dependencies {
   implementation(project(":photoview"))
   implementation(project(":core-ui"))
 
+  // Room replaced with Realm
+  implementation("io.realm:realm-android-library:10.18.0")
+  implementation("io.realm:realm-annotations:10.18.0")
+  implementation("io.realm:realm-android-kotlin-extensions:10.18.0")
+
   implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.fragment.compose)
   implementation(libs.androidx.appcompat) {
@@ -577,6 +589,38 @@ dependencies {
   androidTestImplementation(testLibs.diff.utils)
 
   androidTestUtil(testLibs.androidx.test.orchestrator)
+
+  // OkHttp
+  implementation(libs.square.okhttp3)
+
+  // Material Design
+  implementation(libs.material.material)
+
+  // Coroutines
+  implementation(libs.kotlinx.coroutines.android)
+  implementation(libs.kotlinx.coroutines.core)
+
+  // ViewModel
+  implementation(libs.androidx.lifecycle.viewmodel.ktx)
+  implementation(libs.androidx.lifecycle.runtime.ktx)
+
+  // Hilt
+  implementation("com.google.dagger:hilt-android:2.53")
+  kapt("com.google.dagger:hilt-android-compiler:2.53")
+
+  // Hilt for ViewModel
+  implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+  kapt("androidx.hilt:hilt-compiler:1.0.0")
+
+  // Navigation
+  implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+  implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+  implementation("androidx.navigation:navigation-compose:2.7.7")
+
+  // Hilt
+  implementation("com.google.dagger:hilt-android:2.53")
+  kapt("com.google.dagger:hilt-android-compiler:2.53")
+  implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 }
 
 fun assertIsGitRepo() {
