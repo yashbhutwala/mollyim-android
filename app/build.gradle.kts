@@ -7,7 +7,7 @@ plugins {
   id("com.squareup.wire")
   id("molly")
   id("kotlin-kapt")
-  id("com.google.dagger.hilt.android") version "2.48"
+  id("com.google.dagger.hilt.android") version "2.53"
 }
 
 val canonicalVersionCode = 1535
@@ -605,8 +605,8 @@ dependencies {
   implementation(libs.androidx.lifecycle.runtime.ktx)
 
   // Hilt
-  implementation("com.google.dagger:hilt-android:2.48")
-  kapt("com.google.dagger:hilt-android-compiler:2.48")
+  implementation("com.google.dagger:hilt-android:2.53")
+  kapt("com.google.dagger:hilt-android-compiler:2.53")
 
   // Hilt for ViewModel
   implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
@@ -618,8 +618,8 @@ dependencies {
   implementation("androidx.navigation:navigation-compose:2.7.7")
 
   // Hilt
-  implementation("com.google.dagger:hilt-android:2.48")
-  kapt("com.google.dagger:hilt-android-compiler:2.48")
+  implementation("com.google.dagger:hilt-android:2.53")
+  kapt("com.google.dagger:hilt-android-compiler:2.53")
   implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 }
 
